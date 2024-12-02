@@ -238,6 +238,28 @@ func NewRemote(capabilities Capabilities, urlPrefix string) (WebDriver, error) {
 	return wd, nil
 }
 
+// ConnectRemote connectes with existing remote client.
+// urlPrefix is the URL to the
+// Selenium server, must be prefixed with protocol (http, https, ...).
+//
+// Providing an empty string for urlPrefix causes the DefaultURLPrefix to be
+// used.
+func ConnectRemote(urlPrefix string, sessionID string) (WebDriver, error) {
+	if urlPrefix == "" {
+		urlPrefix = DefaultURLPrefix
+	}
+
+	wd := &remoteWD{
+		urlPrefix:    urlPrefix,
+		capabilities: Capabilities{},
+	}
+
+	if err := wd.SwitchSession(sessionID); err != nil {
+		return nil, err
+	}
+	return wd, nil
+}
+
 // DeleteSession deletes an existing session at the WebDriver instance
 // specified by the urlPrefix and the session ID.
 func DeleteSession(urlPrefix, id string) error {
@@ -431,7 +453,8 @@ func (wd *remoteWD) NewSession() (string, error) {
 		}},
 		{map[string]interface{}{
 			"desiredCapabilities": wd.capabilities,
-		}}}
+		}},
+	}
 
 	for i, s := range attempts {
 		data, err := json.Marshal(s.params)
@@ -1075,7 +1098,8 @@ func (wd *remoteWD) keyAction(action, keys string) error {
 				"type":    "key",
 				"id":      "default keyboard",
 				"actions": actions,
-			}},
+			},
+		},
 	})
 }
 
