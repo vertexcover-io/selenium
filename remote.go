@@ -257,6 +257,12 @@ func ConnectRemote(urlPrefix string, sessionID string) (WebDriver, error) {
 	if err := wd.SwitchSession(sessionID); err != nil {
 		return nil, err
 	}
+	// this only works in non w3c mode
+	_, err := wd.Capabilities()
+	if err != nil {
+		wd.w3cCompatible = true
+	}
+
 	return wd, nil
 }
 

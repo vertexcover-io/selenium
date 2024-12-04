@@ -9,3 +9,6 @@ vendor/*
 coverage.txt
 coverage.out
 .idea/*
+
+.vscode
+testing/cmd/test
